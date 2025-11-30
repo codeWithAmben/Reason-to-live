@@ -59,6 +59,38 @@
         #rotate-hint .box { max-width: 520px; width: 100%; }
         #rotate-hint .rotate-ico { width: 60px; height: 60px; margin: 0 auto 0.75rem auto; display:block; opacity:0.95; }
         #rotate-hint.show { display:flex; visibility: visible; opacity: 1; }
+
+        /* Mobile responsive tweaks */
+        @media (max-width: 640px) {
+            /* Make slide images fill the screen yet keep the important top area visible */
+            #slide-img { height: 100vh; object-position: top center; }
+
+            /* Slightly smaller heading on mobile */
+            #slide-title { font-size: 1.5rem; line-height: 1.1; }
+            #slide-desc { font-size: 0.95rem; }
+
+            /* Improve readability and layout */
+            #text-container { padding-left: 1rem; padding-right: 1rem; padding-bottom: 2.75rem; max-width: 90%; }
+
+            /* Larger clickable area for controls */
+            #audio-btn { padding: 0.5rem 0.75rem; font-size: 0.85rem; border-radius: 9999px; }
+            #audio-btn, #audio-btn * { touch-action: manipulation; }
+
+            /* Top-right controls are slightly inset on mobile so they don't overlap status bar */
+            .top-controls { right: 0.5rem; top: 0.75rem; }
+
+            /* Progress bar slightly thicker on touch devices */
+            .h-1 { height: 3px !important; }
+
+            /* Adjust the final end screen button for better touch targets */
+            #end-screen button { padding: 0.75rem 1rem; font-size: 0.95rem; }
+        }
+
+        /* Smaller desktop / larger phones tweak */
+        @media (max-width: 900px) {
+            #slide-title { font-size: 2rem; }
+            #text-container { max-width: 95%; }
+        }
     </style>
 </head>
 <body class="h-screen w-full overflow-hidden text-stone-100 selection:bg-rose-500 selection:text-white">
@@ -69,11 +101,12 @@
 
     <!-- Landing Screen -->
     <div id="landing" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-stone-900 transition-opacity duration-1000">
-        <div class="cursor-pointer group text-center p-10" onclick="startJourney()">
-            <h1 class="serif-font text-4xl md:text-6xl lg:text-7xl font-light tracking-wide group-hover:text-rose-300 transition-colors duration-500">
+        <div class="cursor-pointer group text-center p-6 md:p-10" onclick="startJourney()">
+                <h1 class="serif-font text-4xl md:text-6xl lg:text-7xl font-light tracking-wide group-hover:text-rose-300 transition-colors duration-500" style="line-height:1.05;">
                 Tell me a reason to live?
             </h1>
-            <p class="mt-6 text-stone-500 text-sm md:text-base tracking-[0.2em] uppercase group-hover:text-stone-300 transition-colors duration-500 animate-pulse">
+            <p class="mt-6 text-stone-500 text-sm md:text-base tracking-[0.2em] uppercase group-hover:text-stone-300 transition-colors duration-500 animate-pulse" style="line-height:1.2;">
+                Rotate for better experience<br>
                 Click to discover
             </p>
         </div>
@@ -91,7 +124,7 @@
 
         <!-- Content Area -->
         <div class="absolute inset-0 flex flex-col items-center justify-end md:justify-center pb-20 md:pb-0 px-6 text-center z-10">
-            <div id="text-container" class="max-w-3xl transform transition-all duration-1000">
+            <div id="text-container" class="max-w-3xl transform transition-all duration-1000" style="pointer-events:none;">
                 <h2 id="slide-title" class="serif-font text-3xl md:text-5xl lg:text-6xl italic leading-tight mb-4 text-white drop-shadow-lg">
                     <!-- Title injected here -->
                 </h2>
@@ -108,8 +141,8 @@
         </div>
 
         <!-- Controls (Optional Manual Override) -->
-        <div class="absolute top-6 right-6 z-20 flex gap-4 items-center">
-            <button id="audio-btn" onclick="toggleAudio()" class="text-stone-400 hover:text-white text-xs uppercase tracking-widest transition-colors opacity-0 duration-1000">
+        <div class="absolute top-6 right-6 z-20 flex gap-4 items-center top-controls">
+            <button id="audio-btn" aria-label="Toggle audio" onclick="toggleAudio()" class="text-stone-400 hover:text-white text-xs uppercase tracking-widest transition-colors opacity-0 duration-1000">
                 Sound Off
             </button>
             <div class="h-4 w-px bg-stone-700"></div>
@@ -363,6 +396,8 @@
                 setTimeout(() => {
                     // 3. Fade In
                     textContainer.style.opacity = '1';
+                    // Ensure text container becomes interactive on reveal for accessibility on larger devices
+                    if (window.innerWidth >= 640) textContainer.style.pointerEvents = 'auto';
                     textContainer.style.transform = 'translateY(0)';
                     
                     // Start Image Zoom (use a smaller scale on mobile so important parts don't crop out)
