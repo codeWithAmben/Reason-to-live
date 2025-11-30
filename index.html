@@ -39,6 +39,26 @@
         .progress-animate {
             animation: load 5000ms linear;
         }
+        /* Rotate hint overlay (mobile portrait guidance) */
+        #rotate-hint {
+            display: none; /* toggled by JS */
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(28,25,23,0.95);
+            color: #fff;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity .25s ease, visibility .25s ease;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1.25rem;
+            pointer-events: auto;
+        }
+        #rotate-hint .box { max-width: 520px; width: 100%; }
+        #rotate-hint .rotate-ico { width: 60px; height: 60px; margin: 0 auto 0.75rem auto; display:block; opacity:0.95; }
+        #rotate-hint.show { display:flex; visibility: visible; opacity: 1; }
     </style>
 </head>
 <body class="h-screen w-full overflow-hidden text-stone-100 selection:bg-rose-500 selection:text-white">
@@ -97,6 +117,20 @@
         </div>
     </div>
 
+    <!-- Rotate hint overlay (mobile portrait) -->
+    <div id="rotate-hint" role="dialog" aria-live="polite" aria-label="Rotate your device">
+        <div class="box">
+            <svg class="rotate-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M21 10V3h-7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M3 14v7h7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M21 3a9 9 0 0 0-12.7 12.7A9 9 0 0 0 21 3z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <h3 class="serif-font text-2xl font-medium mb-2">Rotate your device</h3>
+            <p class="text-stone-300 text-sm mb-4">For the best viewing experience, please rotate your device to landscape orientation.</p>
+            <button id="rotate-dismiss" class="px-4 py-2 rounded-full bg-rose-600 hover:bg-rose-700 text-white">Continue anyway</button>
+        </div>
+    </div>
+
     <!-- Final End Screen -->
     <div id="end-screen" class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center bg-stone-900 text-center px-4">
         <h2 class="serif-font text-4xl md:text-5xl text-white mb-6">Life is full of beautiful moments.</h2>
@@ -119,7 +153,7 @@
             {
                 text: "Coffee on a rainy afternoon",
                 desc: "The warmth in your hands while the world washes itself clean.",
-                img: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2000&auto=format&fit=crop"
+                img: "coffee.png?q=80&w=2000&auto=format&fit=crop"
             },
             {
                 text: "Praising God",
@@ -197,6 +231,9 @@
         const progressBar = document.getElementById('progress-bar');
         const textContainer = document.getElementById('text-container');
         const endScreen = document.getElementById('end-screen');
+        // Rotate hint elements
+        const rotateHint = document.getElementById('rotate-hint');
+        const rotateDismiss = document.getElementById('rotate-dismiss');
         const audioEl = document.getElementById('bg-music');
         const audioBtn = document.getElementById('audio-btn');
 
@@ -248,6 +285,11 @@
             // Show slideshow container
             slideshow.classList.remove('pointer-events-none', 'opacity-0');
             audioBtn.classList.remove('opacity-0');
+            // Hide rotate hint and persist dismissal for this session
+            if (rotateHint) {
+                rotateHint.classList.remove('show');
+                try { sessionStorage.setItem('rotateDismissed', '1'); } catch(e) {}
+            }
             
             // Wait for fade out to finish then start
             setTimeout(() => {
@@ -361,6 +403,59 @@
                 loadSlide(0);
             });
         }
+
+        // Show/hide rotate overlay for small portrait screens
+        function shouldShowRotateHint() {
+            // Robust small-screen & portrait detection using window dimensions
+
+            try {
+                const dismissed = sessionStorage.getItem('rotateDismissed') === '1';
+                const w = window.innerWidth || document.documentElement.clientWidth || screen.width;
+                const h = window.innerHeight || document.documentElement.clientHeight || screen.height;
+                const isPortrait = h > w;
+                const isSmall = w <= 900;
+                const forced = new URLSearchParams(window.location.search).get('showRotate') === '1';
+                const should = (isPortrait && isSmall && !dismissed) || forced;
+                console.debug('rotateHint check:', { w, h, isPortrait, isSmall, dismissed, forced, should });
+                return should;
+            } catch (e) {
+                // If anything goes wrong, be conservative and only check portrait / width
+                const w = window.innerWidth || document.documentElement.clientWidth || screen.width;
+                const h = window.innerHeight || document.documentElement.clientHeight || screen.height;
+                const isPortrait = h > w;
+                const isSmall = w <= 900;
+                const forced = new URLSearchParams(window.location.search).get('showRotate') === '1';
+                const should = isPortrait && isSmall || forced;
+                console.debug('rotateHint fallback check:', { w, h, isPortrait, isSmall, forced, should, err: e });
+                return should;
+            }
+        }
+
+        function checkRotateHint() {
+            if (!rotateHint) return;
+            if (shouldShowRotateHint()) rotateHint.classList.add('show');
+            else rotateHint.classList.remove('show');
+        }
+
+        // Persist dismiss when clicking the button
+        if (rotateDismiss) rotateDismiss.addEventListener('click', () => {
+            try { sessionStorage.setItem('rotateDismissed', '1'); } catch(e) {}
+            if (rotateHint) rotateHint.classList.remove('show');
+        });
+
+        // Developer quick reset: add a global function to clear session dismissal for debugging
+        window.__resetRotateHint = function() {
+            try { sessionStorage.removeItem('rotateDismissed'); } catch(e) {}
+            checkRotateHint();
+            console.debug('rotateHint dismissal cleared');
+        }
+
+        window.addEventListener('resize', checkRotateHint);
+        window.addEventListener('orientationchange', checkRotateHint);
+        document.addEventListener('DOMContentLoaded', checkRotateHint);
+        window.addEventListener('load', checkRotateHint);
+        // Also invoke once immediately (script runs after DOM), so overlay appears without waiting
+        try { checkRotateHint(); } catch (e) { console.log('checkRotateHint initial run failed:', e); }
     </script>
 </body>
 </html>
