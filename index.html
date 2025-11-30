@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reasons to Live</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #1c1917; /* stone-900 */
+        }
+        .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+        .fade-enter {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        .fade-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 1000ms ease-in-out, transform 1000ms ease-out;
+        }
+        .fade-exit {
+            opacity: 1;
+        }
+        .fade-exit-active {
+            opacity: 0;
+            transition: opacity 800ms ease-in-out;
+        }
+        
+        /* Custom progress bar animation */
+        @keyframes load {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+        .progress-animate {
+            animation: load 5000ms linear;
+        }
+    </style>
+</head>
+<body class="h-screen w-full overflow-hidden text-stone-100 selection:bg-rose-500 selection:text-white">
+
+    <!-- Background Music -->
+    <!-- Using a royalty-free calm piano track -->
+    <audio id="bg-music" loop src="sailor.mp3"></audio>
+
+    <!-- Landing Screen -->
+    <div id="landing" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-stone-900 transition-opacity duration-1000">
+        <div class="cursor-pointer group text-center p-10" onclick="startJourney()">
+            <h1 class="serif-font text-4xl md:text-6xl lg:text-7xl font-light tracking-wide group-hover:text-rose-300 transition-colors duration-500">
+                Tell me a reason to live?
+            </h1>
+            <p class="mt-6 text-stone-500 text-sm md:text-base tracking-[0.2em] uppercase group-hover:text-stone-300 transition-colors duration-500 animate-pulse">
+                Click to discover
+            </p>
+        </div>
+    </div>
+
+    <!-- Slideshow Container -->
+    <div id="slideshow" class="absolute inset-0 opacity-0 pointer-events-none transition-opacity duration-1000 bg-black">
+        
+        <!-- Background Image -->
+        <div class="absolute inset-0">
+            <img id="slide-img" src="" alt="Reason to live" class="w-full h-screen md:h-full object-cover object-top md:object-center opacity-60 transition-transform duration-[10000ms] ease-linear scale-100" style="transform: scale(1.1)">
+            <!-- Overlay Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/40 to-transparent"></div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="absolute inset-0 flex flex-col items-center justify-end md:justify-center pb-20 md:pb-0 px-6 text-center z-10">
+            <div id="text-container" class="max-w-3xl transform transition-all duration-1000">
+                <h2 id="slide-title" class="serif-font text-3xl md:text-5xl lg:text-6xl italic leading-tight mb-4 text-white drop-shadow-lg">
+                    <!-- Title injected here -->
+                </h2>
+                <div class="w-24 h-1 bg-rose-500 mx-auto my-6 rounded-full opacity-80"></div>
+                <p id="slide-desc" class="text-stone-300 text-lg md:text-xl font-light tracking-wide">
+                    <!-- Description injected here -->
+                </p>
+            </div>
+        </div>
+
+        <!-- Progress Bar (Bottom) -->
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-stone-800">
+            <div id="progress-bar" class="h-full bg-rose-500 w-0"></div>
+        </div>
+
+        <!-- Controls (Optional Manual Override) -->
+        <div class="absolute top-6 right-6 z-20 flex gap-4 items-center">
+            <button id="audio-btn" onclick="toggleAudio()" class="text-stone-400 hover:text-white text-xs uppercase tracking-widest transition-colors opacity-0 duration-1000">
+                Sound Off
+            </button>
+            <div class="h-4 w-px bg-stone-700"></div>
+            <button onclick="restartSlideshow()" class="text-stone-400 hover:text-white text-xs uppercase tracking-widest transition-colors">Replay</button>
+        </div>
+    </div>
+
+    <!-- Final End Screen -->
+    <div id="end-screen" class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center bg-stone-900 text-center px-4">
+        <h2 class="serif-font text-4xl md:text-5xl text-white mb-6">Life is full of beautiful moments.</h2>
+        <p class="text-stone-400 max-w-xl mx-auto mb-10 leading-relaxed">
+            Even in the darkest times, the sun will rise again. Keep going for the little things, and the big things will follow.
+        </p>
+        <button onclick="location.reload()" class="border border-stone-600 px-8 py-3 rounded-full hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 text-stone-300 uppercase tracking-widest text-sm">
+            Watch Again
+        </button>
+    </div>
+
+    <script>
+        // Configuration
+        const slides = [
+            {
+                text: "Watching the sunset",
+                desc: "The promise that endings can be beautiful too.",
+                img: "sunset.png"
+            },
+            {
+                text: "Coffee on a rainy afternoon",
+                desc: "The warmth in your hands while the world washes itself clean.",
+                img: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2000&auto=format&fit=crop"
+            },
+            {
+                text: "Praising God",
+                desc: "Finding peace in something greater than ourselves.",
+                img: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?q=80&w=2000&auto=format&fit=crop"
+            },
+            {
+                text: "Giving back to parents",
+                desc: "The joy of honoring those who gave you life.",
+                img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2000&auto=format&fit=crop"
+            },
+            {
+                text: "The smell of old books",
+                desc: "Stories waiting to be read, adventures waiting to be had.",
+                img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=2000&auto=format&fit=crop"
+            },
+            {
+                text: "A genuine laugh",
+                desc: "The kind that makes your stomach hurt and your soul light.",
+                img: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2000&auto=format&fit=crop"
+            },
+            {
+                text: "The future you haven't met yet",
+                desc: "There are friends you haven't made and songs you haven't heard.",
+                img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop"
+            }
+        ];
+
+        // Utility: Build srcset from an Unsplash URL by varying the width param
+        function buildUnsplashSrcSet(url) {
+            try {
+                const widths = [400, 800, 1200, 2000];
+                const srcEntries = widths.map(w => {
+                    const u = new URL(url);
+                    // Preserve other params but set width
+                    u.searchParams.set('w', w);
+                    return `${u.toString()} ${w}w`;
+                });
+                // Choose a reasonable fallback (largest width)
+                const fallback = new URL(url);
+                fallback.searchParams.set('w', 1200);
+                return { srcset: srcEntries.join(', '), fallback: fallback.toString(), sizes: '(max-width: 640px) 100vw, 1200px' };
+            } catch (e) {
+                console.log('buildUnsplashSrcSet failed:', e);
+                return null;
+            }
+        }
+
+        // Preload first slide image so mobile devices render it faster
+        (function preloadFirst() {
+            try {
+                const first = slides[0];
+                const preloadImg = new Image();
+                if (first.img && first.img.includes('images.unsplash.com')) {
+                    const src = buildUnsplashSrcSet(first.img);
+                    preloadImg.src = src ? src.fallback : first.img;
+                } else {
+                    preloadImg.src = first.img;
+                }
+            } catch (e) {
+                console.log('Preload failed:', e);
+            }
+        })();
+
+        let currentIndex = 0;
+        let slideInterval;
+        const displayTime = 5000; // Time per slide in ms
+
+        // DOM Elements
+        const landing = document.getElementById('landing');
+        const slideshow = document.getElementById('slideshow');
+        const imgEl = document.getElementById('slide-img');
+        const titleEl = document.getElementById('slide-title');
+        const descEl = document.getElementById('slide-desc');
+        const progressBar = document.getElementById('progress-bar');
+        const textContainer = document.getElementById('text-container');
+        const endScreen = document.getElementById('end-screen');
+        const audioEl = document.getElementById('bg-music');
+        const audioBtn = document.getElementById('audio-btn');
+
+        function startJourney() {
+            // Start audio playback from 5 seconds into the track once the user clicks.
+            // This sets the audio position then plays; if metadata isn't loaded yet, wait for it.
+            const startAt = 5; // seconds to skip into the track
+            audioEl.volume = 0.5;
+            audioEl.muted = false;
+
+            function startAudioFrom(seconds) {
+                try {
+                    // If duration is known and the start position is within it, set currentTime
+                    if (audioEl.duration && !isNaN(audioEl.duration)) {
+                        audioEl.currentTime = Math.min(seconds, audioEl.duration);
+                    } else {
+                        // If duration isn't known, attempt to set but if it fails it will be handled in loadedmetadata
+                        audioEl.currentTime = seconds;
+                    }
+                } catch (err) {
+                    // Some browsers may throw if setting currentTime before metadata
+                    console.log('Could not set currentTime immediately:', err);
+                }
+
+                const playPromise = audioEl.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        audioBtn.textContent = "Sound Off";
+                    }).catch(error => {
+                        console.log("Audio play failed (check connection or browser policy):", error);
+                        audioBtn.textContent = "Sound On";
+                    });
+                }
+            }
+
+            if (audioEl.readyState >= 1) { // HAVE_METADATA
+                startAudioFrom(startAt);
+            } else {
+                audioEl.addEventListener('loadedmetadata', function onMeta() {
+                    audioEl.removeEventListener('loadedmetadata', onMeta);
+                    startAudioFrom(startAt);
+                }, { once: true });
+            }
+
+            // Hide landing
+            landing.style.opacity = '0';
+            landing.style.pointerEvents = 'none';
+            
+            // Show slideshow container
+            slideshow.classList.remove('pointer-events-none', 'opacity-0');
+            audioBtn.classList.remove('opacity-0');
+            
+            // Wait for fade out to finish then start
+            setTimeout(() => {
+                landing.style.display = 'none';
+                loadSlide(0);
+            }, 1000);
+        }
+
+        function toggleAudio() {
+            // If audio is paused or muted, play/unmute — otherwise pause
+            if (audioEl.paused) {
+                audioEl.play();
+                audioEl.muted = false;
+                audioBtn.textContent = "Sound Off";
+            } else if (audioEl.muted) {
+                audioEl.muted = false;
+                audioBtn.textContent = "Sound Off";
+            } else {
+                audioEl.pause();
+                audioBtn.textContent = "Sound On";
+            }
+        }
+
+        function loadSlide(index) {
+            if (index >= slides.length) {
+                finishSlideshow();
+                return;
+            }
+
+            const slide = slides[index];
+            currentIndex = index;
+
+            // 1. Reset State (Fade Text Out)
+            textContainer.style.opacity = '0';
+            textContainer.style.transform = 'translateY(20px)';
+            imgEl.style.opacity = '0.4'; // Dim slightly during transition
+            
+            // Remove animation to reset it
+            progressBar.classList.remove('progress-animate');
+            void progressBar.offsetWidth; // Trigger reflow
+
+            setTimeout(() => {
+                // 2. Change Content
+                // If the slide image is from Unsplash, build and set responsive srcset + sizes
+                if (slide.img && slide.img.includes('images.unsplash.com')) {
+                    const set = buildUnsplashSrcSet(slide.img);
+                    if (set) {
+                        imgEl.srcset = set.srcset;
+                        imgEl.sizes = set.sizes;
+                        imgEl.src = set.fallback; // fallback src
+                    } else {
+                        imgEl.src = slide.img;
+                        imgEl.removeAttribute('srcset');
+                        imgEl.removeAttribute('sizes');
+                    }
+                } else if (slide.img) {
+                    // For local files, if there are higher-res versions, consider adding them (e.g., sunset@2x.png)
+                    // If not, just set src and remove srcset and sizes so the browser uses the best-fit
+                    imgEl.src = slide.img;
+                    imgEl.removeAttribute('srcset');
+                    imgEl.removeAttribute('sizes');
+                }
+                titleEl.textContent = slide.text;
+                descEl.textContent = slide.desc;
+                
+                // Reset Image Zoom Effect
+                imgEl.style.transition = 'none';
+                imgEl.style.transform = 'scale(1.0)';
+                
+                // Wait for image to load briefly (or just timeout)
+                setTimeout(() => {
+                    // 3. Fade In
+                    textContainer.style.opacity = '1';
+                    textContainer.style.transform = 'translateY(0)';
+                    
+                    // Start Image Zoom (use a smaller scale on mobile so important parts don't crop out)
+                    const scaleFactor = (window.innerWidth < 768) ? 1.03 : 1.1;
+                    imgEl.style.transition = `transform ${displayTime + 1000}ms linear`;
+                    imgEl.style.transform = `scale(${scaleFactor})`;
+                    imgEl.style.opacity = '0.6';
+
+                    // Start Progress Bar
+                    progressBar.style.animationDuration = `${displayTime}ms`;
+                    progressBar.classList.add('progress-animate');
+
+                    // Schedule next slide
+                    slideInterval = setTimeout(() => {
+                        loadSlide(index + 1);
+                    }, displayTime);
+
+                }, 100);
+            }, 800);
+        }
+
+        function finishSlideshow() {
+            slideshow.style.opacity = '0';
+            setTimeout(() => {
+                slideshow.style.display = 'none';
+                endScreen.classList.remove('hidden');
+            }, 1000);
+        }
+
+        function restartSlideshow() {
+            clearTimeout(slideInterval);
+            endScreen.classList.add('hidden');
+            slideshow.style.display = 'block';
+            
+            // Small delay to ensure display:block applies before opacity transition
+            requestAnimationFrame(() => {
+                slideshow.style.opacity = '1';
+                loadSlide(0);
+            });
+        }
+    </script>
+</body>
+</html>
