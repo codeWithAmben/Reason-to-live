@@ -1,0 +1,147 @@
+/* ===================================
+   Reasons to Live - Main Stylesheet
+   =================================== */
+
+/* === Base Styles === */
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #1c1917;
+}
+
+.serif-font {
+    font-family: 'Playfair Display', serif;
+}
+
+/* === Transitions & Animations === */
+.fade-enter {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 1000ms ease-in-out, transform 1000ms ease-out;
+}
+
+.fade-exit {
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 800ms ease-in-out;
+}
+
+/* Progress bar animation */
+@keyframes load {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
+
+.progress-animate {
+    animation: load 5000ms linear;
+}
+
+/* === Rotate Hint Overlay === */
+#rotate-hint {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(28, 25, 23, 0.95);
+    color: #fff;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.25rem;
+    pointer-events: auto;
+}
+
+#rotate-hint .box {
+    max-width: 520px;
+    width: 100%;
+}
+
+#rotate-hint .rotate-ico {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 0.75rem auto;
+    display: block;
+    opacity: 0.95;
+}
+
+#rotate-hint.show {
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+}
+
+/* === Mobile Responsive === */
+@media (max-width: 640px) {
+    /* Slide images */
+    #slide-img {
+        height: 100vh;
+        object-position: top center;
+    }
+
+    /* Typography */
+    #slide-title {
+        font-size: 1.5rem;
+        line-height: 1.1;
+    }
+
+    #slide-desc {
+        font-size: 0.95rem;
+    }
+
+    /* Layout */
+    #text-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-bottom: 2.75rem;
+        max-width: 90%;
+    }
+
+    /* Controls */
+    #audio-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        border-radius: 9999px;
+    }
+
+    #audio-btn,
+    #audio-btn * {
+        touch-action: manipulation;
+    }
+
+    .top-controls {
+        right: 0.5rem;
+        top: 0.75rem;
+    }
+
+    /* Progress bar */
+    .h-1 {
+        height: 3px !important;
+    }
+
+    /* End screen button */
+    #end-screen button {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* === Tablet / Large Phone === */
+@media (max-width: 900px) {
+    #slide-title {
+        font-size: 2rem;
+    }
+
+    #text-container {
+        max-width: 95%;
+    }
+}
