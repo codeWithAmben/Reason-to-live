@@ -1,15 +1,108 @@
 /* ===================================
    Reasons to Live - Main Stylesheet
+   A beautiful, contemplative experience
    =================================== */
 
 /* === Base Styles === */
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Lato', sans-serif;
     background-color: #1c1917;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .serif-font {
     font-family: 'Playfair Display', serif;
+}
+
+/* Smooth scrolling and reduced motion support */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* === Landing Screen === */
+.landing-screen {
+    background: linear-gradient(135deg, #1c1917 0%, #292524 50%, #1c1917 100%);
+}
+
+/* Ambient floating particles */
+.particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.particles::before,
+.particles::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    opacity: 0.03;
+    animation: float 20s infinite ease-in-out;
+}
+
+.particles::before {
+    background: radial-gradient(circle, #f43f5e 0%, transparent 70%);
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.particles::after {
+    background: radial-gradient(circle, #fb7185 0%, transparent 70%);
+    bottom: 20%;
+    right: 15%;
+    animation-delay: -10s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    25% {
+        transform: translate(30px, -30px) scale(1.1);
+    }
+    50% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+    75% {
+        transform: translate(-30px, -20px) scale(1.05);
+    }
+}
+
+/* Decorative line animation */
+.decorative-line {
+    opacity: 0.6;
+    transition: all 0.5s ease;
+}
+
+.group:hover .decorative-line {
+    width: 120px;
+    opacity: 1;
+}
+
+/* Scroll hint bounce */
+.scroll-hint {
+    transition: opacity 0.3s ease;
 }
 
 /* === Transitions & Animations === */
@@ -43,17 +136,84 @@ body {
     animation: load 5000ms linear;
 }
 
+/* Text reveal animation */
+@keyframes textReveal {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Subtle glow effect */
+@keyframes subtleGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(244, 63, 94, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(244, 63, 94, 0.2);
+    }
+}
+
+/* === Slideshow Enhancements === */
+#slide-img {
+    filter: brightness(0.7) saturate(1.1);
+    transition: transform 6000ms linear, opacity 800ms ease, filter 800ms ease;
+}
+
+#slideshow:not(.opacity-0) #slide-img {
+    filter: brightness(0.65) saturate(1.15);
+}
+
+/* Enhanced text shadow for better readability */
+#slide-title {
+    text-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+#slide-desc {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Divider line with glow */
+#text-container > div:not(:first-child):not(:last-child) {
+    animation: subtleGlow 3s ease-in-out infinite;
+}
+
+/* === Controls Styling === */
+#audio-btn,
+button {
+    transition: all 0.3s ease;
+}
+
+#audio-btn:hover,
+.top-controls button:hover {
+    transform: translateY(-1px);
+}
+
+#audio-btn:focus,
+button:focus {
+    outline: 2px solid rgba(244, 63, 94, 0.5);
+    outline-offset: 2px;
+}
+
 /* === Rotate Hint Overlay === */
 #rotate-hint {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: rgba(28, 25, 23, 0.95);
+    background: rgba(28, 25, 23, 0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: #fff;
     visibility: hidden;
     opacity: 0;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -64,6 +224,7 @@ body {
 #rotate-hint .box {
     max-width: 520px;
     width: 100%;
+    animation: textReveal 0.5s ease-out;
 }
 
 #rotate-hint .rotate-ico {
@@ -72,6 +233,7 @@ body {
     margin: 0 auto 0.75rem auto;
     display: block;
     opacity: 0.95;
+    animation: float 4s ease-in-out infinite;
 }
 
 #rotate-hint.show {
@@ -80,8 +242,49 @@ body {
     opacity: 1;
 }
 
+/* === End Screen Enhancements === */
+#end-screen {
+    background: linear-gradient(135deg, #1c1917 0%, #292524 50%, #1c1917 100%);
+}
+
+#end-screen h2 {
+    animation: textReveal 1s ease-out;
+}
+
+#end-screen p {
+    animation: textReveal 1s ease-out 0.2s both;
+}
+
+#end-screen button {
+    animation: textReveal 1s ease-out 0.4s both;
+    position: relative;
+    overflow: hidden;
+}
+
+#end-screen button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+#end-screen button:hover::before {
+    left: 100%;
+}
+
 /* === Mobile Responsive === */
 @media (max-width: 640px) {
+    /* Landing particles smaller on mobile */
+    .particles::before,
+    .particles::after {
+        width: 150px;
+        height: 150px;
+    }
+    
     /* Slide images */
     #slide-img {
         height: 100vh;
@@ -91,11 +294,12 @@ body {
     /* Typography */
     #slide-title {
         font-size: 1.5rem;
-        line-height: 1.1;
+        line-height: 1.15;
     }
 
     #slide-desc {
         font-size: 0.95rem;
+        line-height: 1.5;
     }
 
     /* Layout */
@@ -132,6 +336,11 @@ body {
     #end-screen button {
         padding: 0.75rem 1rem;
         font-size: 0.95rem;
+    }
+    
+    /* Scroll hint hidden on mobile */
+    .scroll-hint {
+        display: none;
     }
 }
 

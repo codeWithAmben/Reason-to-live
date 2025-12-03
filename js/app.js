@@ -1,16 +1,20 @@
 // ======================
 // Configuration
 // ======================
+
+// Base path for assets - handles GitHub Pages subdirectory deployment
+const BASE_PATH = './';
+
 const slides = [
     {
         text: "Watching the sunset",
         desc: "The promise that endings can be beautiful too.",
-        img: "assets/images/sunset.png"
+        img: `${BASE_PATH}assets/images/sunset.png`
     },
     {
         text: "Coffee on a rainy afternoon",
         desc: "The warmth in your hands while the world washes itself clean.",
-        img: "assets/images/coffee.png"
+        img: `${BASE_PATH}assets/images/coffee.png`
     },
     {
         text: "Praising God",
@@ -51,6 +55,7 @@ let slideInterval;
 // DOM Elements
 // ======================
 const landing = document.getElementById('landing');
+const startBtn = document.getElementById('start-btn');
 const slideshow = document.getElementById('slideshow');
 const imgEl = document.getElementById('slide-img');
 const titleEl = document.getElementById('slide-title');
@@ -231,8 +236,8 @@ function loadSlide(index) {
             
             imgEl.onerror = () => {
                 console.warn('Image failed to load:', slide.img);
-                if (slide.img !== 'assets/images/sunset.png') {
-                    imgEl.src = 'assets/images/sunset.png';
+                if (!slide.img.includes('sunset.png')) {
+                    imgEl.src = `${BASE_PATH}assets/images/sunset.png`;
                 }
             };
         }
@@ -346,6 +351,17 @@ window.__resetRotateHint = function() {
 // Event Listeners
 // ======================
 
+// Start button click and keyboard support
+if (startBtn) {
+    startBtn.addEventListener('click', startJourney);
+    startBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            startJourney();
+        }
+    });
+}
+
 // Rotate hint dismissal
 if (rotateDismiss) {
     rotateDismiss.addEventListener('click', () => {
@@ -353,6 +369,35 @@ if (rotateDismiss) {
         if (rotateHint) rotateHint.classList.remove('show');
     });
 }
+
+// Keyboard navigation for slideshow
+document.addEventListener('keydown', (e) => {
+    // Only handle keys when slideshow is visible
+    if (slideshow.classList.contains('opacity-0')) return;
+    
+    switch(e.key) {
+        case 'ArrowRight':
+        case ' ':
+            e.preventDefault();
+            clearTimeout(slideInterval);
+            loadSlide(currentIndex + 1);
+            break;
+        case 'ArrowLeft':
+            e.preventDefault();
+            clearTimeout(slideInterval);
+            if (currentIndex > 0) loadSlide(currentIndex - 1);
+            break;
+        case 'm':
+        case 'M':
+            toggleAudio();
+            break;
+        case 'Escape':
+            if (!endScreen.classList.contains('hidden')) {
+                location.reload();
+            }
+            break;
+    }
+});
 
 // Window events for rotate hint
 window.addEventListener('resize', checkRotateHint);

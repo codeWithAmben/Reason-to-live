@@ -4,25 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reasons to Live</title>
+    
+    <!-- SEO & Social Sharing -->
+    <meta name="description" content="A gentle reminder of life's beautiful moments. Discover reasons to keep going.">
+    <meta name="theme-color" content="#1c1917">
+    <meta property="og:title" content="Reasons to Live">
+    <meta property="og:description" content="A gentle reminder of life's beautiful moments.">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>">
+    
+    <!-- Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body class="h-screen w-full overflow-hidden text-stone-100 selection:bg-rose-500 selection:text-white">
 
     <!-- Background Music -->
-    <audio id="bg-music" loop src="assets/audio/sailor.mp3"></audio>
+    <audio id="bg-music" loop preload="auto" src="./assets/audio/Journey - Don't Stop Believin' (Official Audio).mp3"></audio>
 
     <!-- Landing Screen -->
-    <div id="landing" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-stone-900 transition-opacity duration-1000">
-        <div class="cursor-pointer group text-center p-6 md:p-10" onclick="startJourney()">
-                <h1 class="serif-font text-4xl md:text-6xl lg:text-7xl font-light tracking-wide group-hover:text-rose-300 transition-colors duration-500" style="line-height:1.05;">
+    <div id="landing" class="landing-screen absolute inset-0 z-50 flex flex-col items-center justify-center bg-stone-900 transition-opacity duration-1000">
+        <!-- Ambient particles background -->
+        <div class="particles" aria-hidden="true"></div>
+        
+        <div id="start-btn" class="cursor-pointer group text-center p-6 md:p-10 relative z-10" role="button" tabindex="0" aria-label="Start the experience">
+            <!-- Decorative elements -->
+            <div class="decorative-line mx-auto mb-8 w-16 h-px bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
+            
+            <h1 class="serif-font text-4xl md:text-6xl lg:text-7xl font-light tracking-wide group-hover:text-rose-300 transition-all duration-500 transform group-hover:scale-[1.02]" style="line-height:1.05;">
                 Tell me a reason to live?
             </h1>
-            <p class="mt-6 text-stone-500 text-sm md:text-base tracking-[0.2em] uppercase group-hover:text-stone-300 transition-colors duration-500 animate-pulse" style="line-height:1.2;">
-                Rotate for better experience<br>
+            
+            <p class="mt-8 text-stone-500 text-sm md:text-base tracking-[0.25em] uppercase group-hover:text-stone-300 transition-colors duration-500" style="line-height:1.4;">
+                <span class="block mb-2 text-rose-400/60">✦</span>
                 Click to discover
             </p>
+            
+            <!-- Decorative elements -->
+            <div class="decorative-line mx-auto mt-8 w-16 h-px bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
+            
+            <!-- Scroll hint -->
+            <div class="scroll-hint mt-12 opacity-40 group-hover:opacity-70 transition-opacity">
+                <svg class="w-6 h-6 mx-auto animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                </svg>
+            </div>
         </div>
     </div>
 
@@ -89,6 +118,6 @@
         </button>
     </div>
 
-    <script src="js/app.js"></script>
+    <script src="./js/app.js"></script>
 </body>
 </html>
